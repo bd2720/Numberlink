@@ -18,9 +18,42 @@ int board[][][];
 
 void setup(){
   size(800, 600);
+  boardInit();
   background(#000000);
-  stroke(#b0b0b0);
+  boardDraw();
+}
+
+void draw(){
+  background(#000000);
+  checkInput();
+  boardDraw();
+}
+
+/*
+    check if the mouse is currently held,
+    evaluate conditions to extend/delete a flow,
+    update board[][][] accordingly
+*/
+void checkInput(){
+  if(!mousePressed) return;
+  int i = (mouseY - coord_start[1]) / sq_size;
+  int j = (mouseX - coord_start[0]) / sq_size;
+  // end if outside board
+  if(mouseY < coord_start[1] || i >= n || mouseX < coord_start[0] || j >= m) return;
+  // mouse is on board[j][i]
+  fill(#808080, 80);
+  square(j*sq_size+coord_start[1], i*sq_size+coord_start[0], sq_size);
   
+}
+
+/*
+    render board based on board[][][] array,
+    first draw lines (only stroke),
+    then draw flows (only fill)
+*/
+void boardDraw(){
+  // draw lines
+  stroke(#b0b0b0);
   int i, j;
   for(i = coord_start[0]; i <= coord_end[0]; i += sq_size){
     line(i, coord_start[1], i, coord_end[1]);
@@ -28,20 +61,14 @@ void setup(){
   for(i = coord_start[1]; i <= coord_end[1]; i += sq_size){
     line(coord_start[0], i, coord_end[0], i);
   }
-  
-  boardInit();
-}
-
-void draw(){
-  // draw board
+  // draw flows
   noStroke();
-  int i, j;
   for(i = 0; i < n; i++){
-   for(j = 0; j < m; j++){
-     if(board[j][i][0] == -1) continue;
-     fill(colors[board[j][i][0]]);
-     circle(coord_start[0]+j*sq_size+sq_size2, coord_start[1]+i*sq_size+sq_size2, nd_size);
-   }
+    for(j = 0; j < m; j++){
+      if(board[j][i][0] == -1) continue;
+      fill(colors[board[j][i][0]]);
+      circle(coord_start[0]+j*sq_size+sq_size2, coord_start[1]+i*sq_size+sq_size2, nd_size);
+    }
   }
 }
 
@@ -53,10 +80,10 @@ void draw(){
 void boardInit(){
   board = new int[m][n][2];
   for(int i = 0; i < n; i++){
-   for(int j = 0; j < m; j++){
-     board[j][i][0] = -1;
-     board[j][i][1] = 0;
-   }
+    for(int j = 0; j < m; j++){
+      board[j][i][0] = -1;
+      board[j][i][1] = 0;
+    }
   } 
   //red
   board[0][0][0] = 0;
